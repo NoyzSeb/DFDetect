@@ -1,3 +1,0 @@
-data_dir: "data/processed/FF32_extractedFrames"
-batch_size: 8
-num_workers: 4

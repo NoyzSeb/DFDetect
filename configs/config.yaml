@@ -1,8 +1,0 @@
-defaults:
-  - data: deepfake
-  - model: dual_resnet
-  - trainer: default
-
-# Project-level settings
-project_name: "Deepfake_DualBranch"
-run_name: "run_v1_FF32_Adam"

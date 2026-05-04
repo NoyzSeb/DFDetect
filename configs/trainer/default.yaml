@@ -1,6 +1,0 @@
-max_epochs: 100
-accelerator: "auto"
-devices: 1
-patience: 10
-scheduler_patience: 2
-save_top_k: 3
