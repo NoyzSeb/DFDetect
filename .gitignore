@@ -8,12 +8,11 @@ venv/
 *.egg-info/
 
 # --- Data & Models ---
-# Ignore actual data, but keep the folder structure if needed using .gitkeep
+# Ignore all data contents, but allow folder structure via .gitkeep files
 
-data/raw/*
-data/processed/*
-!data/.gitkeep
-!data/processed/.gitkeep
+data/**
+!data/**/
+!data/**/.gitkeep
 
 # Ignore large model checkpoints
 *.ckpt
