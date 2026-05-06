@@ -9,9 +9,10 @@ venv/
 
 # --- Data & Models ---
 # Ignore actual data, but keep the folder structure if needed using .gitkeep
+
 data/raw/*
 data/processed/*
-!data/raw/.gitkeep
+!data/.gitkeep
 !data/processed/.gitkeep
 
 # Ignore large model checkpoints
