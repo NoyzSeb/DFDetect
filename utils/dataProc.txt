@@ -1,0 +1,101 @@
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+from typing import Iterable, Tuple
+
+from PIL import Image
+
+
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
+
+
+def iter_image_files(root: Path) -> Iterable[Path]:
+	for path in root.rglob("*"):
+		if path.is_file() and path.suffix.lower() in IMAGE_EXTS:
+			yield path
+
+
+def _fill_color_for_mode(mode: str) -> Tuple[int, ...] | int:
+	if mode == "RGBA":
+		return (0, 0, 0, 0)
+	if mode in {"RGB", "YCbCr"}:
+		return (0, 0, 0)
+	if mode == "LA":
+		return (0, 0)
+	return 0
+
+
+def center_crop_or_pad(image: Image.Image, target_size: int = 480) -> Image.Image:
+	width, height = image.size
+	left = max(0, (width - target_size) // 2)
+	top = max(0, (height - target_size) // 2)
+	right = left + min(target_size, width)
+	bottom = top + min(target_size, height)
+
+	cropped = image.crop((left, top, right, bottom))
+	crop_w, crop_h = cropped.size
+	if crop_w == target_size and crop_h == target_size:
+		return cropped
+
+	fill = _fill_color_for_mode(cropped.mode)
+	canvas = Image.new(cropped.mode, (target_size, target_size), color=fill)
+	pad_left = (target_size - crop_w) // 2
+	pad_top = (target_size - crop_h) // 2
+	canvas.paste(cropped, (pad_left, pad_top))
+	return canvas
+
+
+def _save_image(image: Image.Image, output_path: Path) -> None:
+	suffix = output_path.suffix.lower()
+	if suffix in {".jpg", ".jpeg"} and image.mode in {"RGBA", "LA", "P"}:
+		image = image.convert("RGB")
+	image.save(output_path)
+
+
+def process_raw_folder(raw_root: Path, processed_root: Path, target_size: int = 480) -> int:
+	if not raw_root.exists():
+		raise FileNotFoundError(f"Raw root not found: {raw_root}")
+	processed_root.mkdir(parents=True, exist_ok=True)
+
+	count = 0
+	for image_path in iter_image_files(raw_root):
+		rel_path = image_path.relative_to(raw_root)
+		output_path = processed_root / rel_path
+		output_path.parent.mkdir(parents=True, exist_ok=True)
+
+		with Image.open(image_path) as img:
+			img = img.convert("RGB") if img.mode == "P" else img
+			resized = center_crop_or_pad(img, target_size=target_size)
+			_save_image(resized, output_path)
+		count += 1
+
+	return count
+
+
+def parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(description="Center crop/pad raw images to a fixed size.")
+	parser.add_argument(
+		"--raw-root",
+		type=Path,
+		default=Path(__file__).resolve().parents[1] / "data" / "raw",
+		help="Root folder containing raw images.",
+	)
+	parser.add_argument(
+		"--processed-root",
+		type=Path,
+		default=Path(__file__).resolve().parents[1] / "data" / "processed",
+		help="Root folder where processed images are written.",
+	)
+	parser.add_argument("--size", type=int, default=480, help="Target square size.")
+	return parser.parse_args()
+
+
+def main() -> None:
+	args = parse_args()
+	count = process_raw_folder(args.raw_root, args.processed_root, target_size=args.size)
+	print(f"Processed {count} images into {args.processed_root}")
+
+
+if __name__ == "__main__":
+	main()

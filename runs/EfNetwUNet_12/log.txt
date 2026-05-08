@@ -1,0 +1,17 @@
+INFO:root:run_name=EfNetwUNet_12
+INFO:root:batch_size=8
+INFO:root:epochs=20
+INFO:root:lr=0.0001
+INFO:root:weight_decay=0.0001
+INFO:root:lambda_mag=0.5
+INFO:root:mag_loss=l1
+INFO:root:cls_weight=1.0
+INFO:root:cls_loss=bce
+INFO:root:efnet_version=b0
+INFO:root:efnet_pretrained=True
+INFO:root:unet_base_channels=32
+INFO:root:use_gating=True
+INFO:root:image_size=480
+INFO:root:spatial_in_channels=3
+INFO:root:freq_in_channels=3
+INFO:root:visual_samples=6
