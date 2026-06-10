@@ -1,0 +1,8 @@
+numpy
+optuna
+pillow
+scikit-learn
+torch
+torchvision
+tqdm
+wandb
