@@ -1,8 +1,12 @@
 numpy
+opencv-python
+pandas
+scikit-image
+scikit-learn
 optuna
 pillow
-scikit-learn
 torch
 torchvision
 tqdm
 wandb
+openpyxl
